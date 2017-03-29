@@ -34,6 +34,3 @@ for pitch in pitch_list:
 for pitch in reversed(pitch_list):
     midi_helper.add_pith(pitch)
 midi_helper.save()
-
-
-
