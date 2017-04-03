@@ -105,7 +105,6 @@ class Scale:
         self.bass_octave = bass_octave
         self.melody_octave = melody_octave
         self.sound_list = Pitch.create_sound_list(self.scale)
-        print(self.sound_list)
 
     def hello_word(self, midi_helper):
         for sound in self.sound_list:
