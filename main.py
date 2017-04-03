@@ -5,7 +5,7 @@ import argparse
 
 class Pitch:
     octave_min = 1
-    octave_max = 7
+    octave_max = 6
     pitch_start = 24  # value of C1
     sound_map = {'C': 0,
                  'CIS': 1,
@@ -20,7 +20,7 @@ class Pitch:
                  'AIS': 10,
                  'H': 11}
 
-    def __init__(self, sound, octave, offset):
+    def __init__(self, sound, offset, octave):
         if octave < self.octave_min:
             octave = self.octave_min
         if octave > self.octave_max:
@@ -36,13 +36,33 @@ class Pitch:
             if cls.sound_map[sound] < previous_sound_value:
                 offset += 1
             sound_list.append([sound, offset])
+            previous_sound_value = cls.sound_map[sound]
         return sound_list
 
 
 class Chord:
     chord_map = {'C': ['C', 'E', 'G'],
                  'c': ['C', 'DIS', 'G'],
+                 'C#': ['CIS', 'F', 'GIS'],
+                 'c#': ['CIS', 'E', 'GIS'],
+                 'D': ['D', 'FIS', 'A'],
+                 'd': ['D', 'F', 'A'],
+                 'D#': ['DIS', 'G', 'AIS'],
+                 'd#': ['DIS', 'FIS', 'AIS'],
+                 'E': ['E', 'GIS', 'H'],
+                 'e': ['E', 'G', 'H'],
+                 'F': ['F', 'A', 'C'],
+                 'f': ['F', 'GIS', 'C'],
+                 'F#': ['FIS', 'AIS', 'CIS'],
+                 'f#': ['FIS', 'A', 'CIS'],
+                 'G': ['G', 'H', 'D'],
+                 'g': ['G', 'AIS', 'D'],
+                 'G#': ['GIS', 'C', 'DIS'],
+                 'g#': ['GIS', 'H', 'DIS'],
+                 'A': ['A', 'CIS', 'E'],
                  'a': ['A', 'C', 'E'],
+                 'A#': ['AIS', 'D', 'F'],
+                 'a#': ['AIS', 'CIS', 'F'],
                  'a7': ['A', 'C', 'E', 'G']}
 
     def __init__(self, chord_name, octave):
@@ -62,7 +82,7 @@ class Chord:
         return chords
 
     @staticmethod
-    def chord_in_scale(chord,scale):
+    def chord_in_scale(chord, scale):
         i = 0
         for e in scale:
             if chord[i] == e:
@@ -84,17 +104,21 @@ class Scale:
         self.scale = self.scale_map[scale_name]
         self.bass_octave = bass_octave
         self.melody_octave = melody_octave
+        self.sound_list = Pitch.create_sound_list(self.scale)
+        print(self.sound_list)
 
     def hello_word(self, midi_helper):
-        sound_list = Pitch.create_sound_list(self.scale)
-        for sound in sound_list:
+        for sound in self.sound_list:
             midi_helper.add_pith(Pitch(sound[0], sound[1], self.melody_octave))
-        for sound in reversed(sound_list):
+        for sound in reversed(self.sound_list):
             midi_helper.add_pith(Pitch(sound[0], sound[1], self.melody_octave))
+
+    @classmethod
+    def random_scale_name(cls):
+        return random.choice(list(cls.scale_map.keys()))
 
     def random_chord_music(self, midi_helper):
         chord_list = Chord.get_chords_for_scale(self.scale)
-        print(chord_list)
         for j in range(0, 3):
             i = 0
             while i < 4:
@@ -108,7 +132,8 @@ class Scale:
                 i += chord_d
                 j = 0
                 while j < chord_d:
-                    pitch_tuple = random.choice(chord.sound_list)
+                    chord_sound = random.choice(chord.sound_list)[0]
+                    pitch_tuple = list(filter(lambda x: x[0] == chord_sound, self.sound_list))[0]
                     pitch = Pitch(pitch_tuple[0], pitch_tuple[1], self.melody_octave)
                     pitch_d = random.choice(self.pitch_d_list)
                     if pitch_d > chord_d - j:
@@ -176,9 +201,13 @@ def main():
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument('-bpm', type=int, default=120, help='BPM', dest='bmp')
     parser.add_argument('-f', type=str, default='myfile.mid', help='FILENAME', dest='filename')
+    random_scale = False
     args = parser.parse_args()
     midi_helper = MidiHelper(args.filename, args.bmp, 60, 120)
-    scale = Scale('A-moll', 1, 5)
+    scale_name = 'A-moll'
+    if random_scale:
+        scale_name = Scale.random_scale_name()
+    scale = Scale(scale_name, 2, 5)
     scale.random_chord_music(midi_helper)
     midi_helper.loop_music(4*4*4)
     midi_helper.save()
