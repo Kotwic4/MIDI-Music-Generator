@@ -197,12 +197,14 @@ class MidiHelper:
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument('-bpm', type=int, default=120, help='BPM', dest='bmp')
-    parser.add_argument('-f', type=str, default='myfile.mid', help='FILENAME', dest='filename')
+    parser = argparse.ArgumentParser(description='Generate random music.')
+    parser.add_argument('-bpm', type=int, default=120, help='Beats per minute', dest='bpm')
+    parser.add_argument('-bV', type=int, default=60, help='Bass volume', dest='bV')
+    parser.add_argument('-mV', type=int, default=120, help='Melody volume', dest='mV')
+    parser.add_argument('-f', type=str, default='myfile.mid', help='Destination filename', dest='filename')
     random_scale = False
     args = parser.parse_args()
-    midi_helper = MidiHelper(args.filename, args.bmp, 60, 120)
+    midi_helper = MidiHelper(args.filename, args.bpm, args.bV, args.mV)
     scale_name = 'A-moll'
     if random_scale:
         scale_name = Scale.random_scale_name()
