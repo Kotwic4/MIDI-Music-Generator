@@ -116,6 +116,10 @@ class Scale:
     def random_scale_name(cls):
         return random.choice(list(cls.scale_map.keys()))
 
+    @classmethod
+    def check_scale_name(cls,name):
+        return name in cls.scale_map.keys()
+
     def random_chord_music(self, midi_helper):
         chord_list = Chord.get_chords_for_scale(self.scale)
         for j in range(0, 3):
@@ -201,16 +205,20 @@ def main():
     parser.add_argument('-bpm', type=int, default=120, help='Beats per minute', dest='bpm')
     parser.add_argument('-bV', type=int, default=60, help='Bass volume', dest='bV')
     parser.add_argument('-mV', type=int, default=120, help='Melody volume', dest='mV')
+    parser.add_argument('-bO', type=int, default=2, help='Bass Octave', dest='bO')
+    parser.add_argument('-mO', type=int, default=5, help='Melody Octave', dest='mO')
+    parser.add_argument('-d', type=int, default=60, help='Song duration', dest='duration')
+    parser.add_argument('-rS', dest='random_scale', action='store_const',const=True, default=False, help='Random Scale')
     parser.add_argument('-f', type=str, default='myfile.mid', help='Destination filename', dest='filename')
-    random_scale = False
+    parser.add_argument('-scale', type=str, default='A-moll', help='Scale name', dest='scale_name')
     args = parser.parse_args()
     midi_helper = MidiHelper(args.filename, args.bpm, args.bV, args.mV)
-    scale_name = 'A-moll'
-    if random_scale:
+    scale_name = args.scale_name
+    if args.random_scale or (not Scale.check_scale_name(scale_name)):
         scale_name = Scale.random_scale_name()
-    scale = Scale(scale_name, 2, 5)
+    scale = Scale(scale_name, args.bO, args.mO)
     scale.random_chord_music(midi_helper)
-    midi_helper.loop_music(4*4*4)
+    midi_helper.loop_music(args.duration)
     midi_helper.save()
 
 if __name__ == '__main__':
