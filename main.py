@@ -94,9 +94,10 @@ class Chord:
 
 class Scale:
     scale_map = {'A-moll': ['A', 'H', 'C', 'D', 'E', 'F', 'G', 'A'],
+                 'A-dur': ['A', 'H', 'CIS', 'D', 'E', 'FIS', 'GIS'],
+                 'FIS-moll': ['FIS', 'GIS', 'A', 'H', 'CIS', 'D', 'E'],
                  'C-dur': ['C', 'D', 'E', 'F', 'G', 'A', 'H', 'C'],
                  'C-moll': ['C', 'D', 'DIS', 'F', 'G', 'GIS', 'AIS', 'C']}
-
     pitch_d_list = [0.25, 0.5, 1]
     chord_d_list = [1, 2, 4]
 
