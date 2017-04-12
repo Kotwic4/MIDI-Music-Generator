@@ -87,7 +87,7 @@ class Chord:
         for e in scale:
             if chord[i] == e:
                 i += 1
-            if i == len(chord)-1:
+            if i == len(chord):
                 return True
         return False
 
